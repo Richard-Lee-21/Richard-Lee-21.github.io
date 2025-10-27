@@ -1,0 +1,64 @@
+name: Scheduled Crawler
+
+on:
+  schedule:
+    # Run every day at 00:00 UTC (adjust as needed)
+    - cron: '0 0 * * *'
+  workflow_dispatch:  # Allow manual trigger
+
+# IMPORTANT: Grant write permissions to push changes
+permissions:
+  contents: write
+
+jobs:
+  crawl:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      
+      - name: Install dependencies
+        run: |
+          pip install requests beautifulsoup4
+      
+      - name: Run crawler
+        run: |
+          # Example crawler script - replace with your actual crawler
+          python << 'EOF'
+          import json
+          from datetime import datetime
+          
+          # Example: Create or update data file
+          data = {
+              "last_updated": datetime.now().isoformat(),
+              "message": "Data crawled successfully"
+          }
+          
+          with open('data.json', 'w') as f:
+              json.dump(data, f, indent=2)
+          
+          print("Crawler completed successfully")
+          EOF
+      
+      - name: Commit and push changes
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add -A
+          
+          # Only commit if there are changes
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "chore: update crawled data [skip ci]"
+            git push
+            echo "Changes pushed successfully"
+          fi
