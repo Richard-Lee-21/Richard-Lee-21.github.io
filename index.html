@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crawler Data Display</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+        .data-container {
+            background-color: #f5f5f5;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+        pre {
+            background-color: #fff;
+            padding: 15px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>Crawled Data Display</h1>
+    <p>This page automatically displays data updated by the scheduled crawler.</p>
+    
+    <div class="data-container">
+        <h2>Latest Crawler Data</h2>
+        <pre id="data-display">Loading...</pre>
+    </div>
+
+    <script>
+        // Fetch and display the crawled data
+        fetch('data.json')
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('data-display').textContent = JSON.stringify(data, null, 2);
+            })
+            .catch(error => {
+                document.getElementById('data-display').textContent = 'No data available yet. The crawler will create data.json on its first run.';
+            });
+    </script>
+</body>
+</html>
